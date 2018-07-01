@@ -2,11 +2,13 @@
 // Constant for the size of the greenhouse, will increase with "investment".
 const GREENHOUSE_SIZE_MULTIPLIER = 1;
 // Framerate.
-const FPS = 30;
-// Plant size in pixels.
-const PLANT_SIZE = 20;
+const FPS = 60;
+// Maximum plant size in pixels (radius).
+const PLANT_SIZE_MAX = 20;
+// Minimum plant size in pixels (radius).
+const PLANT_SIZE_MIN = 5;
 // Light radius from lamps in pixels.
-const LAMP_RADIUS = 80;
+const LAMP_RADIUS = 40;
 
 // Variables
 /** @type {HTMLCanvasElement} */
@@ -32,6 +34,18 @@ var numPlants = 300;
 var time = 0;
 var isNight = true;
 
+// Are the lights turned on or off?
+var lightsOn = true;
+
+// Current size of plants, increases as they grow.
+var plantCurrentSize = 5;
+
+// The amount of money the player currently has.
+var money = 200;
+
+// Disease rate of plants can change with certain management techniques.
+var diseaseRate = 0.05;
+
 // Set up the game loop.
 setInterval(update, 1000 / FPS);
 	
@@ -41,13 +55,16 @@ setInterval(update, 1000 / FPS);
 		time += 1;
 		// Draw the background color, changes with day vs night.
 		if (time <= 120) {
-		ctx.fillStyle = "#ebecf2";
+			ctx.fillStyle = "#bbd2e4";
+			isNight = false;
 		}
 		else if (time > 120 && time <= 240) {
-			ctx.fillStyle = "black";
+			ctx.fillStyle = "#0c2b42";
+			isNight = true;
 		}
 		else {
 			time = 0;
+			plantCurrentSize++;
 		}
 		ctx.fillRect(0, 0, canv.width, canv.height);
 		
@@ -58,19 +75,32 @@ setInterval(update, 1000 / FPS);
 		// Draw plants.
 		var plantCol = 0;
 		var plantRow = 0;
+		var plantRowCount = 0;
+		
 		for (var i=0; i<numPlants; i++) {
-			
-			if ((0 + PLANT_SIZE + PLANT_SIZE * plantCol * 2) < canv.width && plantRow < canv.height - PLANT_SIZE) {
+			if (plantCurrentSize > PLANT_SIZE_MAX) {
+				plantCurrentSize = PLANT_SIZE_MIN;
+			}
+			if ((0 + PLANT_SIZE_MAX + PLANT_SIZE_MAX * plantCol * 2) < canv.width && plantRow < canv.height - PLANT_SIZE_MAX) {
+				// Draw soil underneath plants.
+				ctx.fillStyle = "brown";
+				ctx.beginPath();
+				ctx.arc(0 + PLANT_SIZE_MAX + PLANT_SIZE_MAX * plantCol * 2, plantRow + PLANT_SIZE_MAX, PLANT_SIZE_MAX - 10, 0, 2*Math.PI);
+				ctx.stroke();
+				ctx.fill();
+				// Draw plants.
 				ctx.fillStyle = "green";
 				ctx.beginPath();
-				ctx.arc(0 + PLANT_SIZE + PLANT_SIZE * plantCol * 2, plantRow + PLANT_SIZE, PLANT_SIZE, 0, 2*Math.PI);
+				ctx.arc(0 + PLANT_SIZE_MAX + PLANT_SIZE_MAX * plantCol * 2, plantRow + PLANT_SIZE_MAX, plantCurrentSize, 0, 2*Math.PI);
 				ctx.stroke();
 				ctx.fill();
 				plantCol++;
 			}
+			
 			else {
 				plantCol = 0;
-				plantRow+=PLANT_SIZE*4;
+				plantRow+=PLANT_SIZE_MAX*4;
+				plantRowCount++;
 			}
 		}
 		// Draw irrigators.
@@ -80,7 +110,16 @@ setInterval(update, 1000 / FPS);
 		// Draw solar panels.
 
 		// Draw light and lighted up areas.
-		
+		if (isNight && lightsOn) {
+			
+			for (var i=0; i<plantRowCount; i++) {
+				if (i % 2 === 0 && i*PLANT_SIZE_MAX*2 < canv.height - PLANT_SIZE_MAX*2) {
+					ctx.fillStyle = "rgba(255,255,164,0.2)";
+					ctx.rect(0, i * PLANT_SIZE_MAX*2, canv.width, PLANT_SIZE_MAX*2);
+					ctx.fill();
+				}
+			}
+		}
 		// Draw shadows.
 
 
