@@ -1,4 +1,19 @@
 canvas {
 	width: 100%;
-	height: auto;
+}
+
+html, body {
+  width:  100%;
+  height: 100%;
+	margin: 0px;
+	overflow: hidden;
+	padding: 0px;
+}
+
+h1 {
+	text-align: center;
+}
+
+.container {
+	width: 100%;
 }

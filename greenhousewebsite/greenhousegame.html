@@ -10,15 +10,38 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<!-- Latest compiled JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<!-- Bootstrap toogle library -->
+	<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+	<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 </head>
 <body>
-	<div class="container">
+	<div class="container-fluid">
 		<h1 id="mainHeading">Run your own greenhouse</h1>
-		<div>
-			<div class="jumbotron">
+		<div class="row">
+			<div class="col col-xl-2 col-lg-2 col-sm-2 col-xs-2">
+				<!-- Greenhouse statistics and player statistics display -->
+				<canvas id="statsCanvas" width="100" height="400"></canvas>
+			</div>
+			<div class="col col-xl-8 col-lg-8 col-md-8 col-sm-18 col-xs-10">
 				<!-- Game container -->
-				<canvas id="gameCanvas" width="700" height="500"></canvas>
+				<canvas id="gameCanvas" width="700" height="400"></canvas>
 				<script src="greenhousegame.js"></script>
+			</div>
+			<div class="col col-xl-2 col-lg-2 col-md-2 col-sm-2">
+
+				<!-- Game controls and buttons -->
+				<div class="checkbox">
+						<label>
+							<input type="checkbox" data-toggle="toggle" id="irrigation">
+							Irrigation
+						</label>
+					</div>
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" data-toggle="toggle" id="vents">
+							Vents
+						</label>
+					</div>
 			</div>
 		</div>
 	</div>

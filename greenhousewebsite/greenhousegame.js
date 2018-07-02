@@ -11,9 +11,15 @@ const PLANT_SIZE_MIN = 5;
 const LAMP_RADIUS = 40;
 
 // Variables
+// Get the game canvas
 /** @type {HTMLCanvasElement} */
 var canv = document.getElementById("gameCanvas");
 var ctx = canv.getContext("2d");
+
+// Get the statistics canvas
+var statsCanv = document.getElementById("statsCanvas");
+var statsCtx = statsCanv.getContext("2d");
+
 // The amount of money you currently have.
 var currentMoney = 0;
 // How high is the current greenhouse in stories.
@@ -46,6 +52,18 @@ var money = 200;
 // Disease rate of plants can change with certain management techniques.
 var diseaseRate = 0.05;
 
+// Outside temperature in degrees celcius.
+var outsideTemperature = 23;
+const MAX_TEMPERATURE_OUTSIDE = 40;
+const MIN_TEMPERATURE_OUTSIDE = 0;
+
+// Inside temperature and plant survival temperatures.
+var insideTemperature = 29;
+const INSIDE_MAX_TEMP = 55;
+const INSIDE_MIN_TEMP = 0;
+const PLANTS_MAX_TEMP = 40;
+const PLANTS_MIN_TEMP = 12;
+
 // Set up the game loop.
 setInterval(update, 1000 / FPS);
 	
@@ -53,14 +71,41 @@ setInterval(update, 1000 / FPS);
 	function update() {
 		// Update time variable.
 		time += 1;
+
+		// Draw inside and outside thermometers.
+		// Inside.
+		// Single movement size on thermometer.
+		var degreeMovementInside = (statsCanv.height/2)/(INSIDE_MAX_TEMP-INSIDE_MIN_TEMP);
+		// Draw temperature filling thermometer.
+		statsCtx.fillStyle = "white";
+		statsCtx.fill();
+		statsCtx.fillStyle = "red";
+		statsCtx.fillRect(0, statsCanv.height/2, statsCanv.width/3, -degreeMovementInside*insideTemperature);
+		statsCtx.rect(0, 0, statsCanv.width/3, statsCanv.height/2);
+		statsCtx.stroke();
+
+		// Outside.
+		// Single movement size on thermometer.
+		var degreeMovementOutside = (statsCanv.height/2)/(MAX_TEMPERATURE_OUTSIDE-MIN_TEMPERATURE_OUTSIDE);
+		// Draw the temperature filling the thermometer.
+		
+		statsCtx.fillStyle = "red";
+		statsCtx.fillRect(statsCanv.width - statsCanv.width/3, statsCanv.height/2, statsCanv.width/3, -degreeMovementOutside*outsideTemperature);
+		statsCtx.rect(statsCanv.width - statsCanv.width/3, 0, statsCanv.width/3, statsCanv.height/2);
+		statsCtx.stroke();
+
 		// Draw the background color, changes with day vs night.
 		if (time <= 120) {
 			ctx.fillStyle = "#bbd2e4";
 			isNight = false;
+			outsideTemperature += 0.1;
+			insideTemperature = outsideTemperature + 5;
 		}
 		else if (time > 120 && time <= 240) {
 			ctx.fillStyle = "#0c2b42";
 			isNight = true;
+			outsideTemperature -= 0.1;
+			insideTemperature = outsideTemperature + 5;
 		}
 		else {
 			time = 0;
