@@ -40,6 +40,15 @@ var numPlants = 300;
 var time = 0;
 var isNight = true;
 
+// Weather settings.
+var isRainy = false;
+var isSunny = true;
+var isCloudy = false;
+// Probabilities of each weather setting.
+var rainyProba = 0.2;
+var cloudyProba = 0.5;
+var sunnyProba = 0.3;
+
 // Are the lights turned on or off?
 var lightsOn = true;
 
@@ -63,7 +72,10 @@ const INSIDE_MAX_TEMP = 55;
 const INSIDE_MIN_TEMP = 0;
 const PLANTS_MAX_TEMP = 40;
 const PLANTS_MIN_TEMP = 12;
-
+// Function for calculating inside temperature given greenhouse parameters.
+function calculateGreenhouseTemperature () {
+	
+}
 // Set up the game loop.
 setInterval(update, 1000 / FPS);
 	
