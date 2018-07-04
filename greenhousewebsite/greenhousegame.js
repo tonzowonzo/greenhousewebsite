@@ -40,17 +40,36 @@ var numPlants = 300;
 var time = 0;
 var isNight = true;
 
-// Weather settings.
-var isRainy = false;
-var isSunny = true;
-var isCloudy = false;
 // Probabilities of each weather setting.
 var rainyProba = 0.2;
 var cloudyProba = 0.5;
-var sunnyProba = 0.3;
+var clearProba = 0.3;
 
+// Pick weather type function.
+function pickWeather () {
+	// Weather settings.
+	var isRainy = false;
+	var isClear = false;
+	var isCloudy = false;
+	var randNum = Math.random();
+	if (randNum < rainyProba) return isRainy = true;
+	else if (randNum < rainyProba + cloudyProba) return isCloudy = true;
+	else return isClear = true;
+}
+// Greenhouse current settings.
 // Are the lights turned on or off?
 var lightsOn = true;
+// Are the vents open?
+var vents = true;
+// Is the irrigation on?
+var irrigation = false;
+// Is the mister on?
+var mister = false;
+// Is the heater on?
+var heater = false;
+// How far are the blinds down where 0.2 is fully down and 1 is up?
+// Value for this variable will come from a slider ranging from 0.2 to 1.0
+var blinds = 0.5;
 
 // Current size of plants, increases as they grow.
 var plantCurrentSize = 5;
@@ -67,14 +86,63 @@ const MAX_TEMPERATURE_OUTSIDE = 40;
 const MIN_TEMPERATURE_OUTSIDE = 0;
 
 // Inside temperature and plant survival temperatures.
+var waterTemperature = 15;
 var insideTemperature = 29;
 const INSIDE_MAX_TEMP = 55;
 const INSIDE_MIN_TEMP = 0;
 const PLANTS_MAX_TEMP = 40;
 const PLANTS_MIN_TEMP = 12;
+
+// Sunlight effect on vents.
+function sunEffect() {
+	if (isNight === false && isClear) {
+		insideTemperature += 0.04;
+	}
+	else if (isNight === false && isCloudy) {
+		insideTemperature += 0.02;
+	}
+}
+
+// Function for effect of vents on temperature.
+function ventEffect () {
+	if (vents && insideTemperature > outsideTemperature) {
+		insideTemperature -= 0.01;
+	}
+}
+
+// Effect of mister on the temperature if greenhouse temp is hotter than water temperature
+function misterEffect() {
+	if (mister && insideTemperature ) {
+		insideTemperature -= 0.03;
+	}
+}
+
+// Effect the blinds have on insulating temperature change.
+function blindsEffect() {
+	// Where is the blind value on the blinds slider?
+	blinds = 0;
+}
+
+// Effect of heating on the greenhouse temperature.
+function heaterEffect() {
+	if (heater) {
+		insideTemperature += 0.02;
+	}	
+}
+
+
 // Function for calculating inside temperature given greenhouse parameters.
 function calculateGreenhouseTemperature () {
-	
+	// Chnage this to functions for calculating each things effect ie (vent effect, sun effect etc)
+	switch (isNight) {
+		case (isNight === true):
+			insideTemperature -= 0.01;
+		case (vents && insideTemperature > outsideTemperature):
+			insideTemperature -= 0.01;
+		case (mister):
+			insideTemperature -= 0.02;
+		
+	}
 }
 // Set up the game loop.
 setInterval(update, 1000 / FPS);
@@ -122,6 +190,7 @@ setInterval(update, 1000 / FPS);
 		else {
 			time = 0;
 			plantCurrentSize++;
+
 		}
 		ctx.fillRect(0, 0, canv.width, canv.height);
 		
