@@ -39,6 +39,7 @@ var numPlants = 300;
 // Time of day (hour)
 var time = 0;
 var isNight = true;
+var isClear = true;
 
 // Probabilities of each weather setting.
 var rainyProba = 0.2;
@@ -88,6 +89,7 @@ const MIN_TEMPERATURE_OUTSIDE = 0;
 // Inside temperature and plant survival temperatures.
 var waterTemperature = 15;
 var insideTemperature = 29;
+var tempChange = 0;
 const INSIDE_MAX_TEMP = 55;
 const INSIDE_MIN_TEMP = 0;
 const PLANTS_MAX_TEMP = 40;
@@ -96,53 +98,56 @@ const PLANTS_MIN_TEMP = 12;
 // Sunlight effect on vents.
 function sunEffect() {
 	if (isNight === false && isClear) {
-		insideTemperature += 0.04;
+		tempChange += 0.04;
 	}
 	else if (isNight === false && isCloudy) {
-		insideTemperature += 0.02;
+		tempChange += 0.02;
 	}
+	else if (isNight) {
+		tempChange -= 0.04;
+	}
+	return tempChange;
 }
 
 // Function for effect of vents on temperature.
 function ventEffect () {
 	if (vents && insideTemperature > outsideTemperature) {
-		insideTemperature -= 0.01;
+		tempChange -= 0.01;
 	}
+	return tempChange;
 }
 
 // Effect of mister on the temperature if greenhouse temp is hotter than water temperature
 function misterEffect() {
 	if (mister && insideTemperature ) {
-		insideTemperature -= 0.03;
+		tempChange -= 0.03;
 	}
+	return tempChange;
 }
 
 // Effect the blinds have on insulating temperature change.
 function blindsEffect() {
 	// Where is the blind value on the blinds slider?
-	blinds = 0;
+	blinds = 0.5;
 }
 
 // Effect of heating on the greenhouse temperature.
 function heaterEffect() {
 	if (heater) {
-		insideTemperature += 0.02;
-	}	
+		tempChange += 0.02;
+	}
+	return tempChange;
 }
 
 
 // Function for calculating inside temperature given greenhouse parameters.
 function calculateGreenhouseTemperature () {
-	// Chnage this to functions for calculating each things effect ie (vent effect, sun effect etc)
-	switch (isNight) {
-		case (isNight === true):
-			insideTemperature -= 0.01;
-		case (vents && insideTemperature > outsideTemperature):
-			insideTemperature -= 0.01;
-		case (mister):
-			insideTemperature -= 0.02;
-		
-	}
+	tempChange = sunEffect();
+	tempChange = ventEffect();
+	tempChange = misterEffect();
+	tempChange = heaterEffect();
+	insideTemperature = insideTemperature + tempChange * blinds;
+	
 }
 // Set up the game loop.
 setInterval(update, 1000 / FPS);
@@ -180,6 +185,7 @@ setInterval(update, 1000 / FPS);
 			isNight = false;
 			outsideTemperature += 0.1;
 			insideTemperature = outsideTemperature + 5;
+			
 		}
 		else if (time > 120 && time <= 240) {
 			ctx.fillStyle = "#0c2b42";
